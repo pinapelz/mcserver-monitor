@@ -38,7 +38,6 @@ def server_monitor():
     print("[Monitor] READY now announcing start time we will restart every ", TIME_TO_ACTION)
     server_handler.announce_to_server(f"We will restart every {TIME_TO_ACTION} seconds ok?", RCON_IP, RCON_PASSWORD, RCON_PORT)
     while True:
-        print("Time: ", timer)
         time.sleep(1)
         timer -= 1
         if timer == WARNING_TIME_1:
@@ -50,7 +49,8 @@ def server_monitor():
         elif timer == WARNING_TIME_FINAL:
             print(WARNING_MSG_FINAL)
             server_handler.announce_to_server(WARNING_MSG_FINAL, RCON_IP, RCON_PASSWORD, RCON_PORT)
-        elif timer == PLAYER_CHECK_INTERVAL:
+        elif timer % PLAYER_CHECK_INTERVAL == 0:
+            print("Current Time Remaining: ", timer)
             player_count = server_handler.get_player_count(RCON_IP, RCON_PASSWORD, RCON_PORT)
             if player_count == 0:
                 print("NO PLAYERS! Shutting down...")
