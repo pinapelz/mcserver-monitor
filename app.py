@@ -84,7 +84,7 @@ def request_on():
 
 @app.route('/')
 def home():
-    return render_template('index.html')
+    return "There's nothing here for now. Head to /request_on to trigger the server"
 
 def monitor_loop():
     print("[Monitor] Allowing for some startup time... (30 sec)")
