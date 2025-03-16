@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ server_name }}  - Start Server</title>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='minecraft.css') }}">
+  <style>
+    .centered-container {
+      max-width: 600px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .centered-button {
+      display: block;
+      margin: 1rem auto;
+    }
+  </style>
+</head>
+<body class="bg-secondary" style="margin:0; padding:0;">
+  <nav class="navbar">
+    <div class="navbar-brand">{{ server_name }} Monitor</div>
+    <ul class="navbar-nav">
+      <li><a href="/">Home</a></li>
+    </ul>
+  </nav>
+  <div class="container my-lg centered-container">
+    <h1 class="font-ten text-accent mb-md" style="font-size: 3rem;">{{ server_name }}</h1>
+    <div class="card">
+      <div class="card-header">
+        Server Start Request
+      </div>
+      <div class="card-body">
+        <h2>
+          {% if message %}
+            {{ message }}
+          {% else %}
+            Initiating Server Start...
+          {% endif %}
+        </h2>
+        <p class="mb-md">
+          The server has received your start request. Please give it some time to start up!
+        </p>
+        <button class="button button-secondary centered-button" onclick="window.location.href='/'">
+          Back to Home
+        </button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

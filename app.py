@@ -28,11 +28,14 @@ WARNING_TIME_FINAL = int(os.getenv("FINAL_WARNING_TIME", 5))
 PLAYER_CHECK_INTERVAL =int(os.getenv("PLAYER_CHECK_INTERVAL", 500)) # check every 5 seconds
 START_SCRIPT_PATH = os.getenv("START_SCRIPT_PATH", "start.sh")
 STOP_SCRIPT_PATH = os.getenv("STOP_SCRIPT_PATH", "stop.sh")
+SERVER_NAME = os.getenv("SERVER_NAME", "My Server")
 
 file_util.create_file(STATE_FILE_PATH, default_val='false')
+timer = 0
 
 
 def server_monitor():
+    global timer
     timer = TIME_TO_ACTION
     time.sleep(30)
     print("[Monitor] READY now announcing start time we will restart every ", TIME_TO_ACTION)
@@ -76,15 +79,19 @@ def get_state():
 @app.route('/request_on', methods=['GET'])
 def request_on():
     if file_util.get_file_contents(STATE_FILE_PATH) == 'true':
-        return ALREADY_ON_MESSAGE
-    server_handler.start_server(START_SCRIPT_PATH)
-    file_util.set_file_contents(STATE_FILE_PATH, 'true')
-    return TURNING_ON_MESSAGE
+        message = ALREADY_ON_MESSAGE
+    else:
+        server_handler.start_server(START_SCRIPT_PATH)
+        file_util.set_file_contents(STATE_FILE_PATH, 'true')
+        message = TURNING_ON_MESSAGE
+    return render_template('request_on.html', server_name=SERVER_NAME, message=message)
 
 
 @app.route('/')
 def home():
-    return "There's nothing here for now. Head to /request_on to trigger the server"
+    global timer
+    state = file_util.get_file_contents(STATE_FILE_PATH)
+    return render_template("index.html", status=state, server_name=SERVER_NAME, time_remaining=timer, player_interval=PLAYER_CHECK_INTERVAL)
 
 def monitor_loop():
     print("[Monitor] Allowing for some startup time... (30 sec)")
