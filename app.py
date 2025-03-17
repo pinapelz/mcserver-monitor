@@ -36,6 +36,9 @@ timer = 0
 
 
 def server_monitor():
+    """
+    Monitors the server and restarts it if there are no players on
+    """
     global timer
     timer = TIME_TO_ACTION
     time.sleep(30)
@@ -74,11 +77,17 @@ def server_monitor():
 
 @app.route('/state', methods=['GET'])
 def get_state():
+    """
+    Returns the current state of the server as known locally
+    """
     return file_util.get_file_contents(STATE_FILE_PATH)
 
 
 @app.route('/request_on', methods=['GET'])
 def request_on():
+    """
+    Requests the server to turn on
+    """
     if file_util.get_file_contents(STATE_FILE_PATH) == 'true':
         message = ALREADY_ON_MESSAGE
     else:
@@ -90,6 +99,9 @@ def request_on():
 
 @app.route('/')
 def home():
+    """
+    Main page for the web interface
+    """
     global timer
     state = file_util.get_file_contents(STATE_FILE_PATH)
     return render_template("index.html", status=state, server_name=SERVER_NAME, time_remaining=timer, player_interval=PLAYER_CHECK_INTERVAL)
@@ -109,7 +121,7 @@ def monitor_loop():
 def run_flask():
     app.run(debug=True, use_reloader=False, port=WEBUI_DEBUG_PORT)
 
-
+# mccron requires being called from the main thread so we run flask in the other
 if __name__ == '__main__':
     flask_thread = threading.Thread(target=run_flask)
     flask_thread.daemon = True

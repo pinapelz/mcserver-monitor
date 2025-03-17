@@ -26,6 +26,7 @@ def stop_server(script_path: str):
 def announce_to_server(message: str, host: str, password:str,port: str):
     with MCRcon(host, password, port) as mcr:
         resp = mcr.command("say " + message)
+    return resp
 
 def get_player_count(host, password, port):
     with MCRcon(host, password, port=port) as mcr:
