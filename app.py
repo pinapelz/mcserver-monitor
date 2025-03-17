@@ -29,6 +29,7 @@ PLAYER_CHECK_INTERVAL =int(os.getenv("PLAYER_CHECK_INTERVAL", 500)) # check ever
 START_SCRIPT_PATH = os.getenv("START_SCRIPT_PATH", "start.sh")
 STOP_SCRIPT_PATH = os.getenv("STOP_SCRIPT_PATH", "stop.sh")
 SERVER_NAME = os.getenv("SERVER_NAME", "My Server")
+WEBUI_DEBUG_PORT = os.getenv("WEBUI_DEBUG_PORT", 5070)
 
 file_util.create_file(STATE_FILE_PATH, default_val='false')
 timer = 0
@@ -106,7 +107,7 @@ def monitor_loop():
             time.sleep(1)
 
 def run_flask():
-    app.run(debug=True, use_reloader=False)
+    app.run(debug=True, use_reloader=False, port=WEBUI_DEBUG_PORT)
 
 
 if __name__ == '__main__':
