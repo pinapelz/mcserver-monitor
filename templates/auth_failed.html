@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>{{ server_name }}  - Start Server</title>
+  <title>{{ server_name }} - Authentication Failed</title>
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='minecraft.css') }}">
   <style>
     .centered-container {
@@ -24,21 +24,15 @@
     </ul>
   </nav>
   <div class="container my-lg centered-container">
-    <h1 class="font-ten text-accent mb-md" style="font-size: 3rem;">{{ server_name }}</h1>
+    <h1 class="font-ten text-accent mb-md" style="font-size: 3rem;">Access Denied</h1>
     <div class="card">
       <div class="card-header">
-        Server Start Request
+        Authentication Failed
       </div>
       <div class="card-body">
-        <h2>
-          {% if message %}
-            {{ message }}
-          {% else %}
-            Initiating Server Start...
-          {% endif %}
-        </h2>
+        <h2 class="text-error">Oops! You are not authorized to view this page.</h2>
         <p class="mb-md">
-          The server has received your start request. Please give it some time to start up!
+          Please check your credentials and try again, or contact the server admin if you believe this is a mistake.
         </p>
         <button class="button button-secondary centered-button" onclick="window.location.href='/'">
           Back to Home

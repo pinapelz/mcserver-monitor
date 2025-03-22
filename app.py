@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect
 from flask_cors import CORS
 import file_util
 import server_handler
@@ -31,6 +31,7 @@ START_SCRIPT_PATH = os.getenv("START_SCRIPT_PATH", "start.sh")
 STOP_SCRIPT_PATH = os.getenv("STOP_SCRIPT_PATH", "stop.sh")
 SERVER_NAME = os.getenv("SERVER_NAME", "My Server")
 WEBUI_DEBUG_PORT = os.getenv("WEBUI_DEBUG_PORT", 5070)
+AUTH_PASSWORD=os.getenv("AUTH_PASSWORD", None) # String or None
 
 file_util.create_file(STATE_FILE_PATH, default_val='false')
 timer = 0
@@ -40,6 +41,7 @@ def server_monitor():
     """
     Monitors the server and restarts it if there are no players on
     """
+    print("[Monitor] Allowing for some startup time... (30 sec)")
     global timer
     timer = TIME_TO_ACTION
     time.sleep(30)
@@ -81,21 +83,30 @@ def get_state():
     """
     Returns the current state of the server as known locally
     """
-    return file_util.get_file_contents(STATE_FILE_PATH)
+    requires_auth = True if AUTH_PASSWORD is not None else False
+    return {
+        "state": file_util.get_file_contents(STATE_FILE_PATH),
+        "requires_auth": requires_auth
+    }
 
 
-@app.route('/request_on', methods=['GET'])
+@app.route('/request_on', methods=['POST'])
 def request_on():
     """
     Requests the server to turn on
     """
+    if AUTH_PASSWORD is not None:
+        auth_password = request.form.get('auth_password')
+        if auth_password != AUTH_PASSWORD:
+            return render_template('auth_failed.html', server_name=SERVER_NAME)
+
     if file_util.get_file_contents(STATE_FILE_PATH) == 'true':
         message = ALREADY_ON_MESSAGE
     else:
         server_handler.start_server(START_SCRIPT_PATH)
         file_util.set_file_contents(STATE_FILE_PATH, 'true')
         message = TURNING_ON_MESSAGE
-    return render_template('request_on.html', server_name=SERVER_NAME, message=message)
+    return render_template('success.html', server_name=SERVER_NAME, message=message)
 
 
 @app.route('/')
@@ -105,13 +116,17 @@ def home():
     """
     global timer
     state = file_util.get_file_contents(STATE_FILE_PATH)
-    return render_template("index.html", status=state, server_name=SERVER_NAME, time_remaining=timer, player_interval=PLAYER_CHECK_INTERVAL)
+    requires_auth = AUTH_PASSWORD is not None
+    return render_template(
+        "index.html",
+        status=state,
+        server_name=SERVER_NAME,
+        time_remaining=timer,
+        player_interval=PLAYER_CHECK_INTERVAL,
+        requires_auth=requires_auth
+    )
 
 def monitor_loop():
-    print("[Monitor] Allowing for some startup time... (30 sec)")
-    if file_util.get_file_contents(STATE_FILE_PATH) == 'false':
-        server_handler.start_server(START_SCRIPT_PATH)
-        file_util.set_file_contents(STATE_FILE_PATH, 'true')
     while True:
         if file_util.get_file_contents(STATE_FILE_PATH) == 'true':
             print("[Monitor Loop] Starting server monitor...")

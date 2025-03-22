@@ -37,7 +37,8 @@
         {% if status == 'true' %}
             <img src="/static/grass_block.webp" style="width: 20%; height: auto;"/>
         {% else %}
-            <img src="/static/dirt_block.webp" style="width: 20%; height: auto;"/>{% endif %}
+            <img src="/static/dirt_block.webp" style="width: 20%; height: auto;"/>
+        {% endif %}
         <p class="mb-md">
           {% if status == 'true' %}
           Ready for players! <br/>
@@ -47,10 +48,15 @@
           {% endif %}
         </p>
         {% if status != 'true' %}
-                <button class="button button-primary centered-button"
-                        onclick="window.location.href='/request_on'">
-                            Start Server
-                </button>
+          <form action="/request_on" method="POST">
+            {% if requires_auth %}
+              <input type="password" name="auth_password" placeholder="Enter Password" required
+                     class="centered-button" style="padding: 0.5rem; width: 60%;"/>
+            {% endif %}
+            <button type="submit" class="button button-primary centered-button">
+              Start Server
+            </button>
+          </form>
         {% endif %}
       </div>
     </div>
