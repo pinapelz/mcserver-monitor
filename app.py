@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 import time
 import random
 import threading
+from waitress import serve
 
 load_dotenv()
 app = Flask(__name__)
@@ -123,7 +124,7 @@ def run_flask():
 
 # mccron requires being called from the main thread so we run flask in the other
 if __name__ == '__main__':
-    flask_thread = threading.Thread(target=run_flask)
+    flask_thread = threading.Thread(target=lambda: serve(app, port=int(WEBUI_DEBUG_PORT)))
     flask_thread.daemon = True
     flask_thread.start()
     monitor_loop()
