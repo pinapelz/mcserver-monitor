@@ -68,9 +68,10 @@ def server_monitor():
                 file_util.set_file_contents(STATE_FILE_PATH, 'false')
                 break
             print("Check Passes. There is at least 1 player on")
-        elif timer == 0:
-            file_util.set_file_contents(STATE_FILE_PATH, 'false')
+        elif timer <= 0:
             server_handler.stop_server(STOP_SCRIPT_PATH)
+            file_util.set_file_contents(STATE_FILE_PATH, 'false')
+            time.sleep(5) # extra delay for any potential throttling
             server_handler.start_server(START_SCRIPT_PATH)
             print("[Monitor] Giving the server some time to startup 30 sec")
             time.sleep(30)
