@@ -36,17 +36,19 @@ AUTH_PASSWORD=os.getenv("AUTH_PASSWORD", None) # String or None
 file_util.create_file(STATE_FILE_PATH, default_val='false')
 timer = 0
 
+active_players = None
 
 def server_monitor():
     """
     Monitors the server and restarts it if there are no players on
     """
     print("[Monitor] Allowing for some startup time... (30 sec)")
-    global timer
+    global timer, active_players
     timer = TIME_TO_ACTION
     time.sleep(30)
     print("[Monitor] READY now announcing start time we will restart every ", TIME_TO_ACTION)
     server_handler.announce_to_server(f"We will restart every {TIME_TO_ACTION} seconds ok?", RCON_IP, RCON_PASSWORD, RCON_PORT)
+    active_players = server_handler.get_list_of_players(RCON_IP, RCON_PASSWORD, RCON_PORT)
     while True:
         time.sleep(1)
         timer -= 1
@@ -61,6 +63,7 @@ def server_monitor():
             server_handler.announce_to_server(WARNING_MSG_FINAL, RCON_IP, RCON_PASSWORD, RCON_PORT)
         elif timer % PLAYER_CHECK_INTERVAL == 0:
             print("Current Time Remaining: ", timer)
+            active_players = server_handler.get_player_list(RCON_IP, RCON_PASSWORD, RCON_PORT)
             player_count = server_handler.get_player_count(RCON_IP, RCON_PASSWORD, RCON_PORT)
             if player_count == 0:
                 print("NO PLAYERS! Shutting down...")
@@ -115,16 +118,20 @@ def home():
     """
     Main page for the web interface
     """
-    global timer
+    global timer, active_players
     state = file_util.get_file_contents(STATE_FILE_PATH)
     requires_auth = AUTH_PASSWORD is not None
+    if active_players is None:
+        active_players = []
+    print(active_players)
     return render_template(
         "index.html",
         status=state,
         server_name=SERVER_NAME,
         time_remaining=timer,
         player_interval=PLAYER_CHECK_INTERVAL,
-        requires_auth=requires_auth
+        requires_auth=requires_auth,
+        player_list=active_players
     )
 
 def monitor_loop():

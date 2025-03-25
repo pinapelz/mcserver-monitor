@@ -38,3 +38,15 @@ def get_player_count(host, password, port):
     else:
         print("Error: Could not parse player count from response.")
         return None
+
+def get_list_of_players(host, password, port):
+    with MCRcon(host, password, port=port) as mcr:
+        response = mcr.command("list")
+        print(response)
+        match = re.search(r"There are \d+ of a max of \d+ players online: (.+)", response)
+    if match:
+        player_list = match.group(1).split(", ")
+        return player_list
+    else:
+        print("Error: Could not parse player list from response.")
+        return None
