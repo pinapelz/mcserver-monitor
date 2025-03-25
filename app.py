@@ -63,7 +63,7 @@ def server_monitor():
             server_handler.announce_to_server(WARNING_MSG_FINAL, RCON_IP, RCON_PASSWORD, RCON_PORT)
         elif timer % PLAYER_CHECK_INTERVAL == 0:
             print("Current Time Remaining: ", timer)
-            active_players = server_handler.get_player_list(RCON_IP, RCON_PASSWORD, RCON_PORT)
+            active_players = server_handler.get_list_of_players(RCON_IP, RCON_PASSWORD, RCON_PORT)
             player_count = server_handler.get_player_count(RCON_IP, RCON_PASSWORD, RCON_PORT)
             if player_count == 0:
                 print("NO PLAYERS! Shutting down...")
@@ -123,7 +123,6 @@ def home():
     requires_auth = AUTH_PASSWORD is not None
     if active_players is None:
         active_players = []
-    print(active_players)
     return render_template(
         "index.html",
         status=state,
