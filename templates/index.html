@@ -24,7 +24,7 @@
       <li><a href="/">Home</a></li>
       {% for link in nav_bar_links %}
         {% if (status == 'true' and link.show_while_on) or (status != 'true' and link.show_while_off) %}
-          <li><a href="{{ link.link }}" target="_blank">{{ link.label or link.link }}</a></li>
+          <li><a href="{{ link.link }}" target="_blank">{{ link.label }}</a></li>
         {% endif %}
       {% endfor %}
     </ul>

@@ -1,0 +1,10 @@
+{
+  "navBar": [
+    {
+      "link": "https://minecraft.net",
+      "label": "Minecraft"
+      "show_while_off": true,
+      "show_while_on": true
+    }
+  ]
+}
