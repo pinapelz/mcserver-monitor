@@ -32,6 +32,7 @@ STOP_SCRIPT_PATH = os.getenv("STOP_SCRIPT_PATH", "stop.sh")
 SERVER_NAME = os.getenv("SERVER_NAME", "My Server")
 WEBUI_DEBUG_PORT = os.getenv("WEBUI_DEBUG_PORT", 5070)
 AUTH_PASSWORD=os.getenv("AUTH_PASSWORD", None) # String or None
+SITE_CONFIG= file_util.read_site_config_file("site_config.json")
 
 file_util.create_file(STATE_FILE_PATH, default_val='false')
 timer = 0
@@ -130,7 +131,8 @@ def home():
         time_remaining=timer,
         player_interval=PLAYER_CHECK_INTERVAL,
         requires_auth=requires_auth,
-        player_list=active_players
+        player_list=active_players,
+        nav_bar_links=SITE_CONFIG["navBar"]
     )
 
 def monitor_loop():

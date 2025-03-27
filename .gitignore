@@ -175,3 +175,4 @@ cython_debug/
 .pypirc
 state_running
 *.sh
+site_config.json

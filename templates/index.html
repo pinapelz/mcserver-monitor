@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>{{server_name}} - Server Monitor</title>
+  <title>{{ server_name }} - Server Monitor</title>
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='minecraft.css') }}">
   <style>
     .centered-container {
@@ -14,33 +14,25 @@
       display: block;
       margin: 1rem auto;
     }
-    .player-table {
-      margin: 1rem auto;
-      border-collapse: collapse;
-      width: 60%;
-      text-align: left;
-    }
-    .player-table th, .player-table td {
-      border: 1px solid #ddd;
-      padding: 8px;
-    }
-    .player-table th {
-      background-color: #444;
-      color: white;
-    }
   </style>
 </head>
 <body class="bg-secondary" style="margin:0; padding:0;">
   <!-- Navigation bar -->
   <nav class="navbar">
-    <div class="navbar-brand">{{server_name}} Monitor</div>
+    <div class="navbar-brand">{{ server_name }} Monitor</div>
     <ul class="navbar-nav">
       <li><a href="/">Home</a></li>
+      {% for link in nav_bar_links %}
+        {% if (status == 'true' and link.show_while_on) or (status != 'true' and link.show_while_off) %}
+          <li><a href="{{ link.link }}" target="_blank">{{ link.label or link.link }}</a></li>
+        {% endif %}
+      {% endfor %}
     </ul>
   </nav>
+
   <div class="container my-lg centered-container">
     <h1 class="font-ten text-accent mb-md" style="font-size: 3rem;">
-      {{server_name}}
+      {{ server_name }}
     </h1>
     <div class="card">
       <div class="card-header">
@@ -56,29 +48,11 @@
         <p class="mb-md">
           {% if status == 'true' %}
           Ready for players! <br/>
-          Server restarts in: <span id="countdown">{{ time_remaining }}</span> or if there are no players (checked every {{ player_interval }} seconds)
+          Server restarts in: {{ time_remaining }} seconds or if there are no players (checked every {{ player_interval }} seconds)
           {% else %}
           Ready to start up on your command!
           {% endif %}
         </p>
-        {% if status == 'true' and player_list %}
-          <h2>Online Players</h2>
-          <table class="player-table">
-            <thead>
-              <tr>
-                <th>Player Name</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for player in player_list %}
-              <tr>
-                <td>{{ player }}</td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-          <p>Updated on intervals. May not be reflective of reality</p>
-        {% endif %}
         {% if status != 'true' %}
           <form action="/request_on" method="POST">
             {% if requires_auth %}
@@ -95,31 +69,3 @@
   </div>
 </body>
 </html>
-<script>
-let timeRemaining = {{ time_remaining | int }};
-
-function formatTime(seconds) {
-  let hours = Math.floor(seconds / 3600);
-  let minutes = Math.floor((seconds % 3600) / 60);
-  let secs = seconds % 60;
-
-  if (hours > 0) {
-    return `${hours} h ${String(minutes).padStart(2, '0')} m ${String(secs).padStart(2, '0')} s`;
-  } else {
-    return `${String(minutes).padStart(2, '0')} m ${String(secs).padStart(2, '0')} s`;
-  }
-}
-
-function updateCountdown() {
-  if (timeRemaining > 0) {
-    document.getElementById("countdown").textContent = formatTime(timeRemaining);
-    timeRemaining--;
-    setTimeout(updateCountdown, 1000);
-  }
-}
-
-if (timeRemaining > 0) {
-  document.getElementById("countdown").textContent = formatTime(timeRemaining);
-  updateCountdown();
-}
-</script>

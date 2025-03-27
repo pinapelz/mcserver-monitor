@@ -1,4 +1,5 @@
 import os
+import json
 
 def create_file(path: str, default_val: str) -> bool:
     """
@@ -21,3 +22,12 @@ def set_file_contents(path: str, value: str) -> bool:
             file.write(value)
         return True
     return False
+
+
+def read_site_config_file(filepath: str) -> dict:
+    try:
+        with open(filepath, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError) as e:
+        print(f"Error loading site config: {e}")
+        return {"navBar": []}  # Safe default
